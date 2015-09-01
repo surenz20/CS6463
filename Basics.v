@@ -28,7 +28,6 @@ Proof. reflexivity.  Qed.
 Example test_andb34:                 (andb3 true true false) = false.
 Proof. reflexivity.  Qed.
 
-
 (** Exercise 3 (factorial) *)
 Fixpoint factorial (n:nat) : nat :=
   match n with
