@@ -1,3 +1,5 @@
+(** attempted 1  optional and completed 1 optional *)
+
 (** Exercise 1 (optimize_0plus_b) *)
 Fixpoint optimize_0plus_b (b : bexp) : bexp :=
   match b with
@@ -84,5 +86,62 @@ Proof.
   apply E_Ass. reflexivity.
   apply E_Ass. reflexivity.
 Qed.
+
+(** Exercise 9 (XtimesYinZ_spec) *)
+(* Definition XtimesYinZ : com :=
+  Z ::= (AMult (AId X) (AId Y))*)
+Theorem XtimesYinZ_spec : forall st x y st',
+  st X = x ->
+  st Y = y ->
+  XtimesYinZ / st || st' ->
+  st' Z = x * y.
+Proof.
+  intros st x y st' stX stY ev. 
+  inversion ev. subst. simpl. 
+  apply update_eq.
+Qed.
+
+(** Exercise 10 (loop_never_stops) *)
+Theorem loop_never_stops : forall st st',
+  ~(loop / st || st').
+Proof.
+  intros st st' contra. unfold loop in contra.
+  remember (WHILE BTrue DO SKIP END) as loopdef.
+  (* Proceed by induction on the assumed derivation showing that
+     [loopdef] terminates.  Most of the cases are immediately
+     contradictory (and so can be solved in one step with
+     [inversion]). *)
+  induction contra; try inversion Heqloopdef.
+    rewrite -> H1 in H. inversion H.
+    subst. apply IHcontra2. reflexivity.
+Qed.
+
+(** Exercise 11 (no_whilesR) *)
+Inductive no_whilesR: com -> Prop := 
+  | nw_skip : no_whilesR SKIP
+  | nw_ass  : forall v e, no_whilesR (v ::= e)
+  | nw_seq  : forall c1 c2, no_whilesR c1 -> no_whilesR c2 -> no_whilesR (c1 ; c2)
+  | nw_if   : forall e c1 c2, no_whilesR c1 -> no_whilesR c2 -> no_whilesR (IFB e THEN c1 ELSE c2 FI).
+
+Theorem no_whiles_eqv:
+   forall c, no_whiles c = true <-> no_whilesR c.
+Proof.
+  split.
+    induction c; intros H; try constructor; try (apply IHc1); try (apply IHc2); 
+    try (simpl in H; apply andb_true_iff in H; apply H).
+      inversion H.
+    intros r. induction r; try reflexivity;
+      try (simpl; rewrite -> IHr1; rewrite -> IHr2; reflexivity).
+Qed.
+
+(** Exercise 12 (optional (neq_id)) *)
+Theorem beq_id_sym: forall i1 i2,
+  beq_id i1 i2 = beq_id i2 i1.
+Proof.
+  intros i1 i2. 
+  destruct i1. destruct i2. 
+  unfold beq_id. apply beq_nat_sym.
+Qed.
+
 
 
